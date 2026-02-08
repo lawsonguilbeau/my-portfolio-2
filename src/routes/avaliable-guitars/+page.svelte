@@ -1,27 +1,31 @@
+<script>
+	import { enhance } from "$app/forms";
+
+	// This captures the response from your +page.server.js
+	export let form;
+
+	// Track if the user just successfully subscribed
+	let subscribed = false;
+</script>
+
 <main class="flex flex-col flex-1">
 	<section
 		id="avaliableGuitars"
 		class="relative w-full h-80 flex flex-col"
 		style="background-image: url(images/header_non_main.png); background-size: cover; background-position: center;"
 	>
-		<!-- Overlay to dim background -->
 		<div class="absolute inset-0 bg-black/50 z-0" />
 
-		<!-- Header placeholder to push content below -->
 		<div class="h-[80px] sm:h-[100px] lg:h-[120px]" />
 
-		<!-- Hero Content -->
 		<div
 			class="relative z-10 flex flex-col gap-6 md:gap-8 lg:gap-10 text-center justify-center px-6 pb-24 pt-10"
 		>
 			<h2 class="font-bigshoulders text-4xl sm:text-5xl md:text-6xl text-white">
 				Available Guitars
 			</h2>
-
-			<!-- Inventory Section -->
 		</div>
 	</section>
-	<!-- Newsletter Section -->
 
 	<section class="dark:bg-black py-20 lg:py-32 flex justify-start gap-5" id="welcome">
 		<div class="flex flex-col justify-center text-center pl-32">
@@ -64,40 +68,67 @@
 					<span class="border-b-2 border-t-2 border-gray-700 py-1">SIGN UP HERE</span>
 				</p>
 			</div>
-			<form class="flex flex-col items-center gap-4 w-full max-w-2xl mx-auto">
-				<div class="w-full">
-					<label for="email" class="font-quicksand text-grey-400 text-sm sr-only"
-						>Email Address</label
+
+			<form
+				method="POST"
+				action="?/subscribe"
+				use:enhance={() => {
+					return async ({ result, update }) => {
+						// This prevents the scroll-to-top and clears inputs
+						await update();
+						if (result.type === "success") {
+							subscribed = true;
+						}
+					};
+				}}
+				class="flex flex-col items-center gap-4 w-full max-w-2xl mx-auto"
+			>
+				{#if subscribed}
+					<div class="text-white font-bigshoulders text-2xl border border-gold p-4 rounded-md">
+						THANKS FOR SIGNING UP!
+					</div>
+				{:else}
+					<div class="w-full">
+						<label for="email" class="font-quicksand text-grey-400 text-sm sr-only"
+							>Email Address</label
+						>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							required
+							placeholder="Email Address"
+							class="w-full px-2 py-3 text-black bg-white rounded-md border-transparent focus:outline-none"
+						/>
+					</div>
+					<div class="w-full">
+						<label for="first-name" class="font-quicksand text-grey-400 text-sm sr-only"
+							>First Name</label
+						>
+						<input
+							type="text"
+							id="first-name"
+							name="firstName"
+							required
+							placeholder="First Name"
+							class="w-full px-2 py-3 text-black bg-white rounded-md border-transparent focus:outline-none"
+						/>
+					</div>
+					<button
+						type="submit"
+						class="w-full px-2 py-3 text-white bg-burgandy font-semibold rounded-md hover:bg-red-900 transition-colors"
 					>
-					<input
-						type="email"
-						id="email"
-						name="email"
-						placeholder="Email Address"
-						class="w-full px-2 py-3 text-black bg-white rounded-md border-transparent focus:outline-none"
-					/>
-				</div>
-				<div class="w-full">
-					<label for="first-name" class="font-quicksand text-grey-400 text-sm sr-only"
-						>First Name</label
-					>
-					<input
-						type="text"
-						id="first-name"
-						name="first-name"
-						placeholder="First Name"
-						class="w-full px-2 py-3 text-black bg-white rounded-md border-transparent focus:outline-none"
-					/>
-				</div>
-				<button
-					type="submit"
-					class="w-full px-2 py-3 text-white bg-burgandy font-semibold rounded-md">Subscribe</button
-				>
+						Subscribe
+					</button>
+				{/if}
+
+				{#if form?.error}
+					<p class="text-red-500 font-quicksand text-sm mt-2">{form.message}</p>
+				{/if}
 			</form>
 		</div>
 	</section>
 
-	<!-- Testimonials Section -->
 	<section class="dark:bg-black py-20" id="testimonials">
 		<div class="flex flex-col gap-10 items-center pb-12">
 			<div class="flex flex-col gap-4 text-center">
@@ -108,9 +139,7 @@
 			</div>
 		</div>
 
-		<!-- Testimonials Container -->
 		<div class="flex flex-row gap-12 max-w-5xl mx-auto font-quicksand text-gray-400 text-sm px-6">
-			<!-- Testimonial Left -->
 			<div class="max-w-md text-left flex flex-col justify-start gap-4 items-start">
 				<p>
 					It will be passed down for more generations! My Papa and Daddy are proud right now! Thank
@@ -123,7 +152,6 @@
 				<p class="text-white font-semibold">MATT PUTMAN</p>
 			</div>
 
-			<!-- Testimonial Right -->
 			<div class="max-w-md text-right flex flex-col justify-end gap-4 items-end">
 				<p>
 					I just wanted to reach out and say that this guitar is magnificent! I love the amount of
