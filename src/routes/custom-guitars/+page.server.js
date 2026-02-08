@@ -1,13 +1,13 @@
 import { fail } from "@sveltejs/kit";
 import nodemailer from "nodemailer";
 import { env } from "$env/dynamic/private";
-const EMAIL_USER = env.EMAIL_USER;
-const EMAIL_PASS = env.EMAIL_PASS;
 
 export const actions = {
 	submitForm: async ({ request, locals }) => {
-		// Access supabase through locals inside the function to avoid eager fetch issues
+		// 1. Grab everything from locals and env INSIDE the function
 		const { supabase } = locals;
+		const EMAIL_USER = env.EMAIL_USER;
+		const EMAIL_PASS = env.EMAIL_PASS;
 
 		const data = await request.formData();
 		const name = data.get("name");
@@ -15,12 +15,12 @@ export const actions = {
 		const tel = data.get("tel");
 		const description = data.get("description");
 
-		// --- 1. Save to Supabase ---
+		// --- 2. Save to Supabase ---
 		const { error: dbError } = await supabase.from("guitar_requests").insert([
 			{
 				name,
 				email,
-				tel: tel ? String(tel) : null, // Ensure it's a string
+				tel: tel ? String(tel) : null,
 				description
 			}
 		]);
@@ -30,7 +30,13 @@ export const actions = {
 			return fail(500, { message: dbError.message });
 		}
 
-		// --- 2. Send an Email ---
+		// --- 3. Send an Email ---
+		// Basic check to make sure env vars loaded
+		if (!EMAIL_USER || !EMAIL_PASS) {
+			console.error("Email credentials missing in environment variables");
+			return { success: true, emailError: "Server configuration error" };
+		}
+
 		const transporter = nodemailer.createTransport({
 			service: "gmail",
 			auth: {
@@ -58,7 +64,6 @@ export const actions = {
 			return { success: true };
 		} catch (error) {
 			console.error("Error sending email:", error);
-			// Return success because the DB part worked, but flag the email failure
 			return { success: true, emailError: true };
 		}
 	}
