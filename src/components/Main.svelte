@@ -1,7 +1,12 @@
 <script>
 	import { fade } from "svelte/transition";
+	import { enhance } from "$app/forms";
+
+	// This captures the response from your +page.server.js via the parent page
+	export let form;
 
 	let selectedImage = null;
+	let subscribed = false;
 
 	function openLightbox(src) {
 		selectedImage = src;
@@ -19,19 +24,15 @@
 		style="background-image: url(images/Home_Main.webp); background-size: cover; background-position: center;"
 	>
 		<div class="absolute inset-0 bg-black/50 z-0" />
-
 		<div class="h-[80px] sm:h-[100px] lg:h-[120px]" />
-
 		<div class="relative z-10 flex flex-col gap-6 md:gap-8 lg:gap-10 text-center px-6 pb-24">
 			<img
 				src="images/logo_full_whitegold.png"
 				alt="logo white gold"
 				class="h-[16rem] w-[32rem] mx-auto"
 			/>
-
 			<h2 class="font-bigshoulders text-4xl sm:text-5xl md:text-6xl text-white">
-				Build the guitar that
-				<br /> reflects who you are!
+				Build the guitar that <br /> reflects who you are!
 			</h2>
 			<p class="font-bold text-bigshoulders text-gold sm:text-lg md:text-xl">
 				UNIQUE GUITARS. EXQUISITE TONE
@@ -46,16 +47,15 @@
 			<p class="font-quicksand text-sm text-gray-400 max-w-md">
 				We offer unique, hand built guitars for discerning players who seek instruments that truly
 				reflect their individuality. By combining premium tome woods and top-shelf components, I
-				ensure exquisite tone and flawless playability, offering a level of quality that transcends
-				limited options.
+				ensure exquisite tone and flawless playability.
 			</p>
 			<div class="flex flex-row gap-4">
 				<button
-					class="font-semibold text-gold hover:text-gold border-gold hover:text-white border-2 border-gold bg-transparent hover:bg-gold hover:border-white px-4 py-2"
+					class="font-semibold text-gold border-2 border-gold bg-transparent hover:bg-gold hover:text-white px-4 py-2 transition-all"
 					>READ MORE</button
 				>
 				<button
-					class="font-semibold text-white hover:text-gold border-2 border-gold bg-gold hover:bg-white px-4 py-2"
+					class="font-semibold text-white border-2 border-gold bg-gold hover:bg-white hover:text-gold px-4 py-2 transition-all"
 					>CUSTOM ORDER</button
 				>
 			</div>
@@ -75,35 +75,64 @@
 					<span class="border-b-2 border-t-2 border-gray-700 py-1">JOIN THE NEWSLETTER</span>
 				</p>
 			</div>
-			<form class="flex flex-col items-center gap-4 w-full max-w-2xl mx-auto">
-				<div class="w-full">
-					<label for="email" class="font-quicksand text-grey-400 text-sm sr-only"
-						>Email Address</label
+
+			<form
+				method="POST"
+				action="/?/subscribe"
+				use:enhance={() => {
+					return async ({ result, update }) => {
+						// Resets the form and handles the server data
+						await update();
+						if (result.type === "success") {
+							subscribed = true;
+						}
+					};
+				}}
+				class="flex flex-col items-center gap-4 w-full max-w-2xl mx-auto"
+			>
+				{#if subscribed}
+					<div
+						class="text-white font-bigshoulders text-2xl border border-gold p-4 rounded-md"
+						transition:fade
 					>
-					<input
-						type="email"
-						id="email"
-						name="email"
-						placeholder="Email Address"
-						class="w-full px-2 py-3 text-black bg-white rounded-md border-transparent focus:outline-none"
-					/>
-				</div>
-				<div class="w-full">
-					<label for="first-name" class="font-quicksand text-grey-400 text-sm sr-only"
-						>First Name</label
+						THANKS FOR SIGNING UP!
+					</div>
+				{:else}
+					<div class="w-full">
+						<label for="email" class="sr-only">Email Address</label>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							placeholder="Email Address"
+							required
+							class="w-full px-2 py-3 text-black bg-white rounded-md border-transparent focus:outline-none"
+						/>
+					</div>
+					<div class="w-full">
+						<label for="first-name" class="sr-only">First Name</label>
+						<input
+							type="text"
+							id="first-name"
+							name="firstName"
+							placeholder="First Name"
+							required
+							class="w-full px-2 py-3 text-black bg-white rounded-md border-transparent focus:outline-none"
+						/>
+					</div>
+					<button
+						type="submit"
+						class="w-full px-2 py-3 text-white bg-burgandy font-semibold rounded-md hover:bg-red-900 transition-colors"
 					>
-					<input
-						type="text"
-						id="first-name"
-						name="first-name"
-						placeholder="First Name"
-						class="w-full px-2 py-3 text-black bg-white rounded-md border-transparent focus:outline-none"
-					/>
-				</div>
-				<button
-					type="submit"
-					class="w-full px-2 py-3 text-white bg-burgandy font-semibold rounded-md">Subscribe</button
-				>
+						Subscribe
+					</button>
+				{/if}
+
+				{#if form?.error && !subscribed}
+					<p class="text-red-500 font-quicksand text-sm mt-2 italic" transition:fade>
+						{form.message}
+					</p>
+				{/if}
 			</form>
 		</div>
 	</section>
@@ -117,73 +146,22 @@
 				</p>
 			</div>
 		</div>
-
 		<div class="flex flex-row gap-12 max-w-5xl mx-auto font-quicksand text-gray-400 text-sm px-6">
 			<div class="max-w-md text-left flex flex-col justify-start gap-4 items-start">
 				<p>
 					It will be passed down for more generations! My Papa and Daddy are proud right now! Thank
-					you so much for this!!! I couldn't be happier about it!
+					you so much!
 				</p>
 				<img src="images/rick.jpg" alt="rick" class="w-20 h-20 rounded-full" />
 				<p class="text-white font-semibold">TANNA BRANDON</p>
-				<p class="mt-2">This guitar is amazing man!!!</p>
-				<img src="images/rick.jpg" alt="rick" class="w-20 h-20 rounded-full" />
-				<p class="text-white font-semibold">MATT PUTMAN</p>
 			</div>
-
 			<div class="max-w-md text-right flex flex-col justify-end gap-4 items-end">
 				<p>
-					I just wanted to reach out and say that this guitar is magnificent! I love the amount of
-					detail that went into it. I feel like every time I look at it, I find something new. It
-					sounds perfect for what I want and I'm so happy that it looks and feels like exactly what
-					I asked for and more!
+					I love the amount of detail that went into it. It sounds perfect and looks exactly what I
+					asked for!
 				</p>
 				<img src="images/rick.jpg" alt="rick" class="w-20 h-20 rounded-full" />
 				<p class="text-white font-semibold">JACKSON WHITAKER</p>
-				<p class="mt-2">Beautiful work! You are truly one of the most talented people I know!</p>
-				<img src="images/rick.jpg" alt="rick" class="w-20 h-20 rounded-full" />
-				<p class="text-white font-semibold">CRIS MASSINGILL</p>
-			</div>
-		</div>
-	</section>
-
-	<section
-		class="relative w-full min-h-96 flex flex-col items-center justify-center py-20"
-		id="customGuitars"
-	>
-		<div
-			class="absolute inset-0 bg-cover bg-center"
-			style="background-image: url(images/guitar_horizontal.png);"
-		></div>
-		<div class="absolute inset-0 bg-black/80"></div>
-		<div class="relative z-10 flex flex-col gap-10 items-center text-center px-6 max-w-5xl">
-			<div class="flex flex-col gap-4 text-center">
-				<p class="font-bigshoulders text-gold text-lg sm:text-3xl md:text-2xl">
-					Get in touch with us to discuss your one of a kind guitar
-				</p>
-				<p class="font-bigshoulders text-white text-3xl">
-					<span class="border-b-2 border-t-2 border-gray-700 py-1">CUSTOM GUITARS</span>
-				</p>
-			</div>
-
-			<div class="flex flex-col gap-4 items-center max-w-5xl">
-				<p class="text-center text-white font-quicksand">
-					All our guitars are built by hand in my barn located in Leesville, South Carolina. My goal
-					is to never build the same guitar twice which means your guitar is one of a kind. Click
-					the link below or email me to schedule a call to talk about your next guitar. I look
-					forward to building what you can dream up!
-				</p>
-				<a
-					href="#contact"
-					class="font-bigshoulders font-semibold text-white hover:text-burgandy border border-burgandy bg-burgandy hover:bg-white px-4 py-2 transition-colors duration-200"
-				>
-					CUSTOM ORDER
-				</a>
-			</div>
-
-			<div class="flex flex-row items-center gap-2 font-bigshoulders text-2xl">
-				<span class="text-gold">EMAIL US:</span>
-				<a href="mailto:Nick@27FOURGUITARS.COM" class="text-white"> Nick@27FOURGUITARS.COM </a>
 			</div>
 		</div>
 	</section>
@@ -225,11 +203,8 @@
 	>
 		<button
 			class="absolute top-8 right-8 text-white text-5xl font-light hover:text-gold transition-colors z-[110]"
-			on:click={closeLightbox}
+			on:click={closeLightbox}>&times;</button
 		>
-			&times;
-		</button>
-
 		<img
 			src={selectedImage}
 			alt="Expanded view"
