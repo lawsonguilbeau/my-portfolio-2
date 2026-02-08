@@ -1,5 +1,7 @@
 <script>
 	import { browser } from "$app/environment";
+	import { afterNavigate, disableScrollHandling } from "$app/navigation";
+	import { page } from "$app/stores";
 
 	import "../app.css";
 	import Footer from "../components/Footer.svelte";
@@ -8,6 +10,15 @@
 	let y;
 	let innerHeight = 0;
 	let innerWidth = 0;
+
+	afterNavigate(() => {
+		if (browser) {
+			// 1. Tell SvelteKit to stop trying to handle the scroll
+			disableScrollHandling();
+			// 2. Force the scroll to the absolute top
+			window.scrollTo({ top: 0, behavior: "instant" });
+		}
+	});
 
 	function goTop() {
 		if (browser) {
@@ -32,6 +43,10 @@
 	</div>
 
 	<Header {y} />
-	<slot />
+
+	{#key $page.url.pathname}
+		<slot />
+	{/key}
+
 	<Footer />
 </div>

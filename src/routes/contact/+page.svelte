@@ -1,7 +1,19 @@
 <script>
+	import { afterNavigate, disableScrollHandling } from "$app/navigation";
+
+	afterNavigate(() => {
+		// This tells SvelteKit "I'll handle the scroll myself, thanks"
+		disableScrollHandling();
+
+		// Force the scroll to the top
+		setTimeout(() => {
+			window.scrollTo(0, 0);
+		}, 0);
+	});
+
 	function formatPhoneNumber(event) {
 		const input = event.target;
-		const cleanedValue = input.value.replace(/\D/g, ""); // Remove all non-digit characters
+		const cleanedValue = input.value.replace(/\D/g, "");
 		let formattedValue = "";
 
 		if (cleanedValue.length > 0) {
@@ -16,6 +28,11 @@
 
 		input.value = formattedValue;
 	}
+
+	// This is the specific line that forces the scroll reset
+	afterNavigate(() => {
+		window.scrollTo(0, 0);
+	});
 </script>
 
 <main class="flex flex-col flex-1">
