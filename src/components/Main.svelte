@@ -1,16 +1,27 @@
+<script>
+	import { fade } from "svelte/transition";
+
+	let selectedImage = null;
+
+	function openLightbox(src) {
+		selectedImage = src;
+	}
+
+	function closeLightbox() {
+		selectedImage = null;
+	}
+</script>
+
 <main class="flex flex-col flex-1">
 	<section
 		id="introPage"
 		class="relative w-full min-h-screen flex flex-col"
 		style="background-image: url(images/Home_Main.webp); background-size: cover; background-position: center;"
 	>
-		<!-- Overlay to dim background -->
 		<div class="absolute inset-0 bg-black/50 z-0" />
 
-		<!-- Header placeholder to push content below -->
 		<div class="h-[80px] sm:h-[100px] lg:h-[120px]" />
 
-		<!-- Hero Content -->
 		<div class="relative z-10 flex flex-col gap-6 md:gap-8 lg:gap-10 text-center px-6 pb-24">
 			<img
 				src="images/logo_full_whitegold.png"
@@ -25,10 +36,9 @@
 			<p class="font-bold text-bigshoulders text-gold sm:text-lg md:text-xl">
 				UNIQUE GUITARS. EXQUISITE TONE
 			</p>
-
-			<!-- Home Welcome Section -->
 		</div>
 	</section>
+
 	<section class="dark:bg-black py-20 lg:py-32 flex justify-start gap-5 text-left" id="welcome">
 		<img src="images/Home_Welcome.png" class="h-96 w-max pl-32" alt="home welcome" />
 		<div class="flex flex-col text-left gap-4 pt-20">
@@ -51,7 +61,7 @@
 			</div>
 		</div>
 	</section>
-	<!-- Newsletter Section -->
+
 	<section
 		id="about"
 		class="dark:bg-black py-20 pt-10 lg:pt-16 lg:py-32 flex flex-col gap-16 sm:gap-20 md:gap-24 relative"
@@ -98,7 +108,6 @@
 		</div>
 	</section>
 
-	<!-- Testimonials Section -->
 	<section class="dark:bg-black py-20" id="testimonials">
 		<div class="flex flex-col gap-10 items-center pb-12">
 			<div class="flex flex-col gap-4 text-center">
@@ -109,9 +118,7 @@
 			</div>
 		</div>
 
-		<!-- Testimonials Container -->
 		<div class="flex flex-row gap-12 max-w-5xl mx-auto font-quicksand text-gray-400 text-sm px-6">
-			<!-- Testimonial Left -->
 			<div class="max-w-md text-left flex flex-col justify-start gap-4 items-start">
 				<p>
 					It will be passed down for more generations! My Papa and Daddy are proud right now! Thank
@@ -124,7 +131,6 @@
 				<p class="text-white font-semibold">MATT PUTMAN</p>
 			</div>
 
-			<!-- Testimonial Right -->
 			<div class="max-w-md text-right flex flex-col justify-end gap-4 items-end">
 				<p>
 					I just wanted to reach out and say that this guitar is magnificent! I love the amount of
@@ -141,20 +147,15 @@
 		</div>
 	</section>
 
-	<!-- Custom Guitars Section -->
 	<section
 		class="relative w-full min-h-96 flex flex-col items-center justify-center py-20"
 		id="customGuitars"
 	>
-		<!-- Background image with overlay -->
 		<div
 			class="absolute inset-0 bg-cover bg-center"
 			style="background-image: url(images/guitar_horizontal.png);"
 		></div>
 		<div class="absolute inset-0 bg-black/80"></div>
-		<!-- overlay -->
-
-		<!-- Content -->
 		<div class="relative z-10 flex flex-col gap-10 items-center text-center px-6 max-w-5xl">
 			<div class="flex flex-col gap-4 text-center">
 				<p class="font-bigshoulders text-gold text-lg sm:text-3xl md:text-2xl">
@@ -180,7 +181,6 @@
 				</a>
 			</div>
 
-			<!-- Email row -->
 			<div class="flex flex-row items-center gap-2 font-bigshoulders text-2xl">
 				<span class="text-gold">EMAIL US:</span>
 				<a href="mailto:Nick@27FOURGUITARS.COM" class="text-white"> Nick@27FOURGUITARS.COM </a>
@@ -188,7 +188,6 @@
 		</div>
 	</section>
 
-	<!-- Display Section -->
 	<section
 		class="dark:bg-black flex flex-col items-center justify-center py-20 text-center"
 		id="display"
@@ -204,51 +203,38 @@
 			</div>
 		</div>
 		<div class="grid grid-cols-3 grid-rows-3 pt-10">
-			<img
-				src="images/gallery1.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
-			<img
-				src="images/gallery2.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
-			<img
-				src="images/gallery3.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
-			<img
-				src="images/gallery4.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
-			<img
-				src="images/gallery5.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
-			<img
-				src="images/gallery6.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
-			<img
-				src="images/gallery7.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
-			<img
-				src="images/gallery8.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
-			<img
-				src="images/gallery9.png"
-				alt="guitar"
-				class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75"
-			/>
+			{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as num}
+				<button class="contents" on:click={() => openLightbox(`images/gallery${num}.png`)}>
+					<img
+						src="images/gallery{num}.png"
+						alt="guitar gallery {num}"
+						class="w-full h-96 object-cover transition-opacity duration-300 hover:opacity-75 cursor-pointer"
+					/>
+				</button>
+			{/each}
 		</div>
 	</section>
 </main>
+
+{#if selectedImage}
+	<div
+		class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-6"
+		on:click={closeLightbox}
+		transition:fade={{ duration: 250 }}
+		role="presentation"
+	>
+		<button
+			class="absolute top-8 right-8 text-white text-5xl font-light hover:text-gold transition-colors z-[110]"
+			on:click={closeLightbox}
+		>
+			&times;
+		</button>
+
+		<img
+			src={selectedImage}
+			alt="Expanded view"
+			class="max-w-full max-h-[85vh] object-contain shadow-2xl rounded-sm"
+			on:click|stopPropagation
+		/>
+	</div>
+{/if}
