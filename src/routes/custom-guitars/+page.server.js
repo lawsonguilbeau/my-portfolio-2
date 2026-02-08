@@ -1,6 +1,8 @@
 import { fail } from "@sveltejs/kit";
 import nodemailer from "nodemailer";
-import { EMAIL_USER, EMAIL_PASS } from "$env/static/private";
+import { env } from "$env/dynamic/private";
+const EMAIL_USER = env.EMAIL_USER;
+const EMAIL_PASS = env.EMAIL_PASS;
 
 export const actions = {
 	submitForm: async ({ request, locals }) => {
