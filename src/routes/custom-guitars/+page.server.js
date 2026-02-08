@@ -3,10 +3,9 @@ import nodemailer from "nodemailer";
 import { EMAIL_USER, EMAIL_PASS } from "$env/static/private";
 
 export const actions = {
-	// Note: We changed this to 'default' or you must ensure your form
-	// uses <form action="?/submitForm">
-	submitForm: async ({ request, locals: { supabase } }) => {
-		// ^^^ We grab 'supabase' from 'locals' here!
+	submitForm: async ({ request, locals }) => {
+		// Access supabase through locals inside the function to avoid eager fetch issues
+		const { supabase } = locals;
 
 		const data = await request.formData();
 		const name = data.get("name");
@@ -14,20 +13,19 @@ export const actions = {
 		const tel = data.get("tel");
 		const description = data.get("description");
 
-		// --- 1. Save to Supabase using the 'locals' client ---
+		// --- 1. Save to Supabase ---
 		const { error: dbError } = await supabase.from("guitar_requests").insert([
 			{
 				name,
 				email,
-				tel,
+				tel: tel ? String(tel) : null, // Ensure it's a string
 				description
 			}
 		]);
 
 		if (dbError) {
 			console.error("Supabase Error Details:", dbError);
-			// This will now show the REAL error message instead of empty quotes
-			return fail(500, { message: dbError.message || "Failed to save to database." });
+			return fail(500, { message: dbError.message });
 		}
 
 		// --- 2. Send an Email ---
@@ -55,11 +53,11 @@ export const actions = {
 		try {
 			await transporter.sendMail(mailOptions);
 			console.log("Email sent and data saved!");
+			return { success: true };
 		} catch (error) {
 			console.error("Error sending email:", error);
-			return fail(500, { message: "Data saved, but email notification failed." });
+			// Return success because the DB part worked, but flag the email failure
+			return { success: true, emailError: true };
 		}
-
-		return { success: true };
 	}
 };
