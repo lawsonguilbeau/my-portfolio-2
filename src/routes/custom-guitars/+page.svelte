@@ -53,14 +53,12 @@
 				class="flex flex-col items-center gap-4 w-full max-w-2xl mx-auto"
 			>
 				<div class="w-full">
-					<label for="first-name" class="font-quicksand text-grey-400 text-sm sr-only"
-						>First Name</label
-					>
+					<label for="name" class="font-quicksand text-grey-400 text-sm sr-only">First Name</label>
 					<p>Your Name*</p>
 					<input
 						type="text"
-						id="first-name"
-						name="first-name"
+						id="name"
+						name="name"
 						placeholder="Your Name"
 						class="w-full px-2 py-3 text-white bg-black rounded-md border-2 border-white focus:border-gold duration-200 focus:outline-none"
 						required

@@ -32,6 +32,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@supabase/ssr": "^0.8.0",
+		"@supabase/supabase-js": "^2.95.3",
 		"axios": "^1.12.2",
 		"dotenv": "^17.2.2",
 		"nodemailer": "^7.0.6"
